@@ -6,7 +6,7 @@ As a large company with many employees, Pewlett-Hackard (PH), is planning for it
 
 The goal of the following analysis was to: 1) Determine the number of retiring employees per title, and 2) Identify employees who are eligible to participate in a mentorship program.
 
-To analysis will be performed on data in a SQL database using PostgreSQL.
+The analysis will be performed on data in a SQL database using PostgreSQL.
 
 ## Analysis
 There are 6 tables from which data will be pulled from to perform the analysis.
@@ -37,7 +37,7 @@ ORDER by e.emp_no
 ;
 ```
 
-Because this result has duplicates (due to employees changing roles over their time with PH) we'll need to unique the employees using ```Distinct ON ()``` in PostgreSQL.
+Because this result has duplicates (due to employees changing roles over their time with PH) we'll need to unique the employees using `Distinct ON ()` in PostgreSQL.
 
 ```
 -- Unique Titles Table
@@ -65,7 +65,7 @@ ORDER BY 1 DESC
 ;
 ```
 
-Each of these table results will be exported as .CSV and handed to the HR Manager.
+Each of these tables will be exported as .CSV and handed to the HR Manager.
 
 ### Employees Eligible for the Mentorship Program
 Find the employees who would be candiates to participate in PH's mentorship program. These employees would be born in the year 1965.
@@ -130,4 +130,30 @@ ORDER BY 2 DESC
 ![mentor_titles_table](https://user-images.githubusercontent.com/89284280/136668509-9969eb12-0496-4869-8074-4a414c8061be.PNG)
 
 ## Summary
-As seen by the Analysis and Results section above, PH has a significant portion of their employees who are approaching retirement. Most of those retiring currently hold "Senior" positions within the company. This situation creates a significant risk to PH in terms of productivity and experience. Fortunately, there are current employees who are not yet near retirement who can serve as mentors to junior and new staff at PH.  
+As seen by the Analysis and Results section above, PH has a significant portion of their employees who are approaching retirement. Most of those retiring currently hold "Senior" positions within the company. This situation creates a significant risk to PH in terms of productivity and loss of experience. Fortunately, there are current employees who are not yet near retirement who can serve as mentors to junior and new staff at PH.  
+
+### Additions
+1) Combining the `unique_titles` table and the `salaries` table allows us to see the average salary of those employees who are about to retire.
+
+Use the `CAST()` function to re-cast the salary into a currency format.
+```
+SELECT title, CAST(AVG(salary) as money)
+FROM unique_titles
+JOIN salaries
+ON salaries.emp_no = unique_titles.emp_no
+GROUP BY title
+ORDER BY 2 DESC
+;
+```
+![unique_titles_avg_salary](https://user-images.githubusercontent.com/89284280/136675329-71e2ff80-2bd7-42eb-894e-351af8964a00.PNG)
+
+2) In terms of choosing mentors, the following shows the most senior employees, using `AGE()` function, by job title based on years/month/days of experience:
+```
+SELECT DISTINCT ON(title) *, AGE(title_start_date) as experience
+FROM mentorship_eligibility
+ORDER BY title, experience DESC
+;
+```
+![mentor_experience_title](https://user-images.githubusercontent.com/89284280/136675923-3a3b87df-17c2-4f13-a728-28625186b754.PNG)
+
+
