@@ -63,3 +63,22 @@ AND (e.birth_date BETWEEN '1965-01-01' AND '1965-12-31')
 ORDER BY e.emp_no, title_start_date DESC
 --LIMIT 100
 ;
+
+--
+-- Summary Point 1
+--
+SELECT title, CAST(AVG(salary) as money)
+FROM unique_titles
+JOIN salaries
+ON salaries.emp_no = unique_titles.emp_no
+GROUP BY title
+ORDER BY 2 DESC
+;
+
+--
+-- Summary Point 2
+--
+SELECT DISTINCT ON(title) *, AGE(title_start_date) as experience
+FROM mentorship_eligibility
+ORDER BY title, experience DESC
+;
