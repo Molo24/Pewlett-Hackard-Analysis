@@ -68,3 +68,66 @@ ORDER BY 1 DESC
 Each of these table results will be exported as .CSV and handed to the HR Manager.
 
 ### Employees Eligible for the Mentorship Program
+Find the employees who would be candiates to participate in PH's mentorship program. These employees would be born in the year 1965.
+
+```
+SELECT DISTINCT ON (e.emp_no) e.emp_no,
+    e.first_name,
+	e.last_name,
+	e.birth_date,
+	de.from_date AS dept_start_date,
+	de.to_date AS dept_end_date,
+	t.title,
+	t.from_Date AS title_start_date,
+	t.to_date AS title_end_date
+INTO mentorship_eligibility
+FROM employees e
+JOIN dept_employees de
+ON e.emp_no = de.emp_no
+JOIN titles t
+ON e.emp_no = t.emp_no
+WHERE de.to_date = '9999-01-01' 
+AND (e.birth_date BETWEEN '1965-01-01' AND '1965-12-31')
+ORDER BY e.emp_no, title_start_date DESC
+--LIMIT 100
+;
+```
+
+Likewise, this table of results will be placed into its own table and exported to .CSV.
+
+## Results
+
+**1) There are 90,398 employees who are close to retirement.**
+```
+SELECT COUNT(*) AS about_to_retire
+FROM unique_titles
+;
+```
+
+**2) Most of those close to retiring currently hold "Senior" positions:**
+```
+SELECT *
+FROM retiring_titles
+;
+```
+![retiring_titles_table](https://user-images.githubusercontent.com/89284280/136668368-02ed393c-1e93-4306-a22b-7a1437f7765b.PNG)
+
+**3) There are 1,549 employees who are candidates for the mentorship program.**
+```
+SELECT COUNT(*)
+FROM mentorship_eligibility
+;
+```
+
+**4) Most of the employees eligible for the mentorship program currently hold "Senior Staff" or "Senior Engineer" positions within the company.**
+```
+SELECT title, COUNT(title)
+FROM mentorship_eligibility
+GROUP BY title
+ORDER BY 2 DESC
+;
+```
+![mentor_titles_table](https://user-images.githubusercontent.com/89284280/136668509-9969eb12-0496-4869-8074-4a414c8061be.PNG)
+
+## Summary
+As seen by the Analysis and Results section above, PH has a significant portion of their employees who are approaching retirement. Most of those retiring currently hold "Senior" positions within the company. This situation creates a significant risk to PH in terms of productivity and experience. Fortunately, there are current employees who are not yet near retirement who can serve as mentors to junior and new staff at PH.  
